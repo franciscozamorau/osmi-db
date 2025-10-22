@@ -4,36 +4,26 @@ import (
 	"context"
 	"fmt"
 	"log"
-	"os"
 	"time"
 
-	"osmi-db/migrator"
-
-	"github.com/jackc/pgx/v5/pgxpool"
+	"github.com/franciscozamorau/osmi-db/internal/db"
+	"github.com/franciscozamorau/osmi-db/migrator"
 )
 
 func main() {
-	// Obtener cadena de conexión desde variable de entorno
-	dsn := os.Getenv("DATABASE_URL")
-	if dsn == "" {
-		dsn = "postgres://osmi:osmi1405@localhost:5432/osmidb"
+	// Inicializar conexión a la base de datos
+	if err := db.Init(); err != nil {
+		log.Fatalf("Error inicializando DB: %v", err)
 	}
+	defer db.Close()
 
-	// Contexto con timeout para conexión
+	// Contexto con timeout para migraciones
 	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
 	defer cancel()
 
-	// Crear pool de conexiones
-	pool, err := pgxpool.New(ctx, dsn)
-	if err != nil {
-		log.Fatalf("Error al conectar a la base de datos: %v", err)
-	}
-	defer pool.Close()
-
 	// Ejecutar migraciones desde carpeta sql
-	err = migrator.RunMigrations(ctx, pool, "internal/sql")
-	if err != nil {
-		log.Fatalf("Error en migraciones: %v", err)
+	if err := migrator.RunMigrations(ctx, db.Pool, "./internal/sql"); err != nil {
+		log.Fatalf("Error ejecutando migraciones: %v", err)
 	}
 
 	fmt.Println("Migraciones ejecutadas correctamente")

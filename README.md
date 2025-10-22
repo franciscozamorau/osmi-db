@@ -1,4 +1,5 @@
 # osmi-db
+
 osmi-db es el módulo responsable de la definición, migración y mantenimiento estructural de la base de datos del ecosistema osmi. Centraliza toda la lógica SQL en archivos independientes, desacoplando completamente la gestión de esquema del servidor de aplicación (osmi-server) y del gateway (osmi-gateway).
 ---
 
@@ -29,30 +30,27 @@ osmi-db/
 └── README.md
 ```
 
-# Funcionalidad
-Ejecuta migraciones SQL en orden alfabético desde internal/sql/.
-
-Cada archivo .sql representa una unidad modular: extensiones, tablas, índices, triggers, vistas.
-
-No contiene lógica de aplicación ni datos embebidos en Go.
-
-Compatible con pgxpool y PostgreSQL ≥ 14.
+## Funcionalidad
+Ejecuta migraciones SQL en orden alfabético desde internal/sql/
+Cada archivo .sql representa una unidad modular: extensiones, tablas, índices, triggers, vistas
+No contiene lógica de aplicación ni datos embebidos en Go
+Compatible con pgxpool y PostgreSQL ≥ 14
 ---
 
-# Ejecución de migraciones
-Requisitos
+## Ejecución de migraciones
+
+** Requisitos **
 Go ≥ 1.20
-
 PostgreSQL corriendo y accesible
-
 Variable de entorno DATABASE_URL configurada (opcional)
+---
 
-# Comando
+## Comando
 ```bash
 go run cmd/migrate.go
 ```
-Si no se define DATABASE_URL, se usará:
----
+## Valor por defecto si no se define DATABASE_URL:
+
 ```bash
 postgres://osmi:osmi1405@localhost:5432/osmidb
 ```
@@ -60,6 +58,7 @@ postgres://osmi:osmi1405@localhost:5432/osmidb
 # Migraciones incluidas
 
 Archivo	Descripción técnica
+
 01_extensions.sql	Activación de extensiones PostgreSQL
 02_users.sql	Tabla de usuarios con roles y autenticación
 03_customers.sql	Clientes extendidos con preferencias y verificación
@@ -73,18 +72,20 @@ Archivo	Descripción técnica
 11_views.sql	Vistas para reportes de ventas y detalles de tickets
 ---
 
-# Buenas prácticas
-No modificar archivos .sql en caliente. Versionar cambios estructurales como nuevos archivos.
+## Buenas prácticas
+No modificar archivos .sql en caliente
+Versionar cambios estructurales como nuevos archivos
+No incluir lógica de negocio ni datos de prueba
+Toda modificación debe ejecutarse vía main.go
+---
 
-No incluir lógica de negocio ni datos de prueba en este módulo.
-
-Toda modificación debe ser reflejada en migraciones explícitas y ejecutadas vía migrate.go.
-
-# Propósito del módulo
+## Propósito del módulo
 Este módulo garantiza:
-
 Separación absoluta entre lógica de aplicación y estructura de base.
-
 Migraciones trazables, reversibles y auditables.
-
 Legado técnico claro, modular y profesional.
+---
+
+# Autor
+
+Francisco David Zamora Urrutia — Fullstack Developer & Systems Engineer

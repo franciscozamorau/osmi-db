@@ -1,4 +1,4 @@
-module osmi-db
+module github.com/franciscozamorau/osmi-db
 
 go 1.25.1
 
